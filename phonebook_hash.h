@@ -27,5 +27,7 @@ entry *findName(char lastName[], entry *pHead);
 entry *append(char lastName[], entry *e);
 
 unsigned int BKDRHash(char *str);
+void init_memorypool(int size);
+void free_memorypool(void);
 #endif
 

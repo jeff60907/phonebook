@@ -2,6 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include "phonebook_hash.h"
+#include "memory_pool.h"
+
+static memory_pool *pool = NULL;
+
+void init_memorypool(int size)
+{
+    pool = pool_init(size);
+}
+
+void free_memorypool(void)
+{
+    pool_free(pool);
+}
+
 
 entry *findName(char lastName[], entry *pHead)
 {
@@ -15,7 +29,7 @@ entry *findName(char lastName[], entry *pHead)
 
 entry *append(char lastName[], entry *e)
 {
-    e->pNext = (entry *) malloc(sizeof(entry));
+    e->pNext = (entry *) pool_alloc(pool, sizeof(entry));
     e = e->pNext;
     strcpy(e->lastName, lastName);
     e->pNext = NULL;

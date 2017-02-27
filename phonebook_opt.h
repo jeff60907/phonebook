@@ -27,5 +27,6 @@ typedef struct _LASTNAME_ENTRY {
 } entry;
 entry *findName(char lastName[], entry *pHead);
 entry *append(char lastName[], entry *e);
-
+void init_memorypool(int size);
+void free_memorypool(void);
 #endif

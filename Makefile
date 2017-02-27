@@ -2,7 +2,8 @@ CC ?= gcc
 CFLAGS_common ?= -Wall -std=gnu99
 CFLAGS_orig = -O0
 CFLAGS_opt  = -O0
-
+CFLAGS_hash = -O0
+CFLAGS_trie = -O0
 EXEC = phonebook_orig phonebook_opt phonebook_hash phonebook_trie
 
 GIT_HOOKS := .git/hooks/pre-commit
@@ -13,7 +14,7 @@ $(GIT_HOOKS):
 	@scripts/install-git-hooks
 	@echo
 
-SRCS_common = main.c
+SRCS_common = main.c memory_pool.c
 
 phonebook_orig: $(SRCS_common) phonebook_orig.c phonebook_orig.h
 	$(CC) $(CFLAGS_common) $(CFLAGS_orig) \
@@ -29,7 +30,7 @@ phonebook_hash: $(SRCS_common) phonebook_hash.c phonebook_hash.h
 		-DIMPL="\"$@.h\"" -o $@ \
 		$(SRCS_common) $@.c
 phonebook_trie: $(SRCS_common) phonebook_trie.c phonebook_trie.h
-	$(CC) $(CFLAGS_common) $(CFLAGS_hash) \
+	$(CC) $(CFLAGS_common) $(CFLAGS_trie) \
 		-DIMPL="\"$@.h\"" -o $@ \
 		$(SRCS_common) $@.c
 
