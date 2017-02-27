@@ -10,12 +10,14 @@
 #define OUT_FILE "opt.txt"
 #elif HASH
 #define OUT_FILE "hash.txt"
+#elif TRIE
+#define OUT_FILE "trie.txt"
 #else
 #define OUT_FILE "orig.txt"
 #endif
 
 #define DICT_FILE "./dictionary/words.txt"
-#define TABLE_SIZE 1024
+#define TABLE_SIZE 32768
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
     struct timespec diff;
@@ -28,6 +30,7 @@ static double diff_in_second(struct timespec t1, struct timespec t2)
     }
     return (diff.tv_sec + diff.tv_nsec / 1000000000.0);
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -53,6 +56,9 @@ int main(int argc, char *argv[])
         e[i]->pNext = NULL;
     }
     i = 0;
+#elif defined(TRIE)
+    entry *pHead = (entry *) malloc(sizeof(entry));
+    printf("size of entry : %lu bytes\n", sizeof(entry));
 #else
     entry *pHead, *e;
     pHead = (entry *) malloc(sizeof(entry));
@@ -77,6 +83,8 @@ int main(int argc, char *argv[])
 #if defined(HASH)
         unsigned int hash = BKDRHash(line) % TABLE_SIZE;
         e[hash] = append(line, e[hash]);
+#elif defined(TRIE)
+        append(line, pHead);
 #else
         e = append(line, e);
 #endif
@@ -90,7 +98,7 @@ int main(int argc, char *argv[])
     for(i = 0; i< TABLE_SIZE; i++ ) {
         e[i] = &pHead[i];
     }
-#else
+#elif !defined(TRIE)
     e = pHead;
 #endif
     /* the givn last name to find */
@@ -98,7 +106,7 @@ int main(int argc, char *argv[])
 #if defined(HASH)
     unsigned int hash = BKDRHash(input) % TABLE_SIZE;
     e[hash] = &pHead[hash];
-#else
+#elif !defined(TRIE)
     e = pHead;
 #endif
     //assert(findName(input, e) &&
@@ -116,6 +124,8 @@ int main(int argc, char *argv[])
     clock_gettime(CLOCK_REALTIME, &start);
 #if defined(HASH)
     findName(input, e[hash]);
+#elif defined(TRIE)
+    findName(input, pHead);
 #else
     findName(input, e);
 #endif
@@ -133,6 +143,8 @@ int main(int argc, char *argv[])
         if(pHead[i].pNext)
             free(pHead[i].pNext);
     }
+#elif defined(TRIE)
+    free_trie(pHead);
 #else
     while (pHead->pNext) {
         entry *next = pHead->pNext;
